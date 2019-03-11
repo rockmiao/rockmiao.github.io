@@ -6,15 +6,15 @@
 
 	<body style='margin : 0px; overflow: hidden;'>
 		<a-scene  embedded artoolkit='sourceType: webcam;'>
-		 	<a-assets>
-		      	<a-asset-item id="mymodel" src="./pony_cartoon/Duck.gltf"></a-asset-item>
-		  	</a-assets>
+			<a-assets>
+				<a-asset-item id="mymodel" src="./pony_cartoon/scene.gltf"></a-asset-item>
+			</a-assets>
 
-		    <a-marker preset='hiro'>
-		     	<a-entity gltf-model="#mymodel"></a-entity>
-		    </a-marker>
+			<a-marker preset='hiro'>
+				<a-entity gltf-model="#mymodel"></a-entity>
+			</a-marker>
 
-		    <a-entity camera></a-entity>
+			<a-entity camera></a-entity>
 		</a-scene>
 	</body>
 </html>
