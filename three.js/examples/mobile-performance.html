@@ -2,14 +2,14 @@
 <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
 
 <body style='margin : 0px; overflow: hidden;'>
-  <a-scene embedded arjs='sourceType: webcam;'>
- 
-    <a-marker preset='hiro'>
-      <a-entity
-      gltf-model="url(/three.js/examples/pony_cartoon/scene.gltf);"
-      >
-      </a-entity>
-      
+  <a-scene  embedded artoolkit='sourceType: webcam; sourceWidth: 240; sourceHeight: 180;' antialias="true" outline>
+ 	<a-assets>
+    	<a-asset-item id="mymodel" src="./three.js/examples/pony_cartoon/scene.gltf"></a-asset-item>
+  	</a-assets>
+
+    <!--<a-marker preset='hiro'>-->
+    <a-marker type='pattern' url='../../data/data/patt.hiro' size='1'>
+      <a-entity gltf-model="#mymodel"></a-entity>
     </a-marker>
 
     <a-entity camera></a-entity>
