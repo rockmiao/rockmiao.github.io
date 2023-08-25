@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月曆</title>
+    <!-- CSS -->
+    <style>
+        body {
+            /* height: 100vh; */
+            display: grid;
+            place-items: center;
+            background-color: rgb(1, 1, 1);
+        }
+
+        .calendar {
+            height: 1000px;
+            width: 1200px;
+            background-color: rgb(116, 116, 116);
+            border-radius: 30px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-size: 25px;
+            color: rgb(255, 255, 255);
+            padding: 10px;
+        }
+
+        .year-picker {
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .month-picker {
+            height:50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .month {
+            width: 200px;
+        }
+
+        .month-change {
+            width: 200px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .calendar-week-day {
+            height: 40px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            font-weight: 600;
+        }
+
+        .calendar-week-day div {
+            display: grid;
+            text-align: center;
+            /* place-items: center; */
+            color: rgb(255, 255, 255);
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            font-size: 25px;
+            color: rgb(255, 255, 255);
+        }
+
+        .calendar-days div {
+            /* width: 70px; */
+            height: 140px;
+            text-align: center;
+            /* display: flex; */
+            /* align-items: center; */
+            /* justify-content: center; */
+            /* margin-left: 8px; */
+            position: relative;
+            cursor: pointer;
+            /* animation: to-top 1s forwards; */
+            border-radius: 10%;
+            border: 1px solid rgb(255, 255, 255);
+            background-color: rgb(116, 116, 116);
+        }
+
+        .calendar-days div:hover {
+            /* transition: 0.5s ease-in-out; */
+            /* width: 50px; */
+            /* height: 50px; */
+            /* width: 100%; */
+            /* height: 100%; */
+            border-radius: 10%;
+            /* border: 1px solid rgb(255, 234, 0); */
+            background-color: rgb(50, 50, 50);
+        }
+
+        .calendar-days div.calendar-content {
+            height: 0px;
+            border: 0px;
+            font-size: 9pt;
+            text-align: start;
+            margin-left: 8px;
+        }
+
+        .calendar-days div.calendar-full {
+            height: 0;
+            border: 0px;
+            font-size: 10pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-days div span {
+            position: absolute;
+        }
+
+        .calendar-days div.curr-date,
+        .calendar-days div.curr-date:hover {
+            background-color: rgb(17, 112, 255);
+            color: white;
+            /* border-radius: 50%; */
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="calendar">
+
+        <div class="calendar-header">
+            <!-- 年 -->
+            <span class="year-picker" id="year">2022</span>
+            <!-- 月 -->
+            <div class="month-picker">
+                <span class="month-change" id="prev-month">
+                    <pre><</pre>
+                </span>
+                <span class="month" id="month">February</span>
+                <span class="month-change" id="next-month">
+                    <pre>></pre>
+                </span>
+            </div>
+
+        </div>
+
+        <div class="calendar-body">
+            <!-- 日 -->
+
+            <!-- 星期 -->
+            <div class="calendar-week-day">
+                <div>日</div>
+                <div>一</div>
+                <div>二</div>
+                <div>三</div>
+                <div>四</div>
+                <div>五</div>
+                <div>六</div>
+            </div>
+            <!-- 日期 -->
+            <div class="calendar-days">
+
+            </div>
+
+        </div>
+
+        <div class="month-list"></div>
+
+    </div>
+
+    <!---------------------------------------------------- JavaScript ---------------------------------------------------->
+    <script >
+        const ALLOW_SHOW_RANGE_EXCEED_SEASON = false;
+
+        /*** REPLACE_CALENDAR_DATA_BEGIN_MARKER ***/
+		const overallAvailableSchedule = {"2023":{"12":{"1":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"2":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"3":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"4":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"5":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"6":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"7":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"8":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"9":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"10":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"11":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"12":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":10}},"13":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":10}},"14":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":0,"snowboard":0}},"15":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":0,"snowboard":0}},"16":{"團體課":{"ski":0,"snowboard":0},"私人課":{"ski":0,"snowboard":0},"包團服務":{"ski":5,"snowboard":10}},"17":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"18":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"19":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"20":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"21":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"22":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"23":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"24":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"25":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"26":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"27":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"28":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"29":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"30":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":10}},"31":{"團體課":{"ski":6,"snowboard":12},"私人課":{"ski":1,"snowboard":2},"包團服務":{"ski":5,"snowboard":15}},"32":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"33":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}}}},"2024":{"1":{"1":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"2":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"3":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"4":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"5":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"6":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"7":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"8":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":5}},"9":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":5}},"10":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"11":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"12":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"13":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"14":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"15":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"16":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"17":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"18":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"19":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"20":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"21":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":0,"snowboard":5}},"22":{"團體課":{"ski":0,"snowboard":6},"私人課":{"ski":0,"snowboard":1},"包團服務":{"ski":5,"snowboard":15}},"23":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"24":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"25":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"26":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"27":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"28":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"29":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"30":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"31":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"32":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"33":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}}},"2":{"1":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"2":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"3":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"4":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"5":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"6":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"7":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"8":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"9":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"10":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"11":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"12":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"13":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"14":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"15":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"16":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"17":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"18":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"19":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"20":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"21":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"22":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"23":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"24":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"25":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"26":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"27":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"28":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"29":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"30":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"31":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}}},"3":{"1":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"2":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"3":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"4":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"5":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"6":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"7":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"8":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"9":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"10":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"11":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"12":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"13":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"14":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"15":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"16":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"17":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"18":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"19":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"20":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"21":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"22":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"23":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"24":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"25":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"26":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"27":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"28":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"29":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"30":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"31":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"32":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"33":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}}},"4":{"1":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"2":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"3":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"4":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"5":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"6":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"7":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"8":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"9":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"10":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"11":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"12":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"13":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}},"14":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"15":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"16":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"17":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"18":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"19":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"20":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"21":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"22":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"23":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"24":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"25":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"26":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"27":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"28":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"29":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"30":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"31":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":0,"snowboard":0}},"32":{"團體課":{"ski":6,"snowboard":18},"私人課":{"ski":1,"snowboard":3},"包團服務":{"ski":5,"snowboard":15}}}}};
+		/*** REPLACE_CALENDAR_DATA_END_MARKER ***/
+
+        /*** REPLACE_CALENDAR_CONSTANT_BEGIN_MARKER ***/
+const DAY_TS = 24 * 60 * 60 * 1000;
+const SEASON_BEGIN = new Date(2023, 12 - 1, 14);
+const SEASON_END = new Date(2024, 4 - 1, 15);
+const MONTH_NAMES = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', ' 十月', '十一月', '十二月'];
+const MIN_DISPLAY_NUM = {
+    "團體課": 1,
+    "私人課": 1,
+    "包團服務": 1
+};
+const SERVICE_DISPLAY_UNIT = {
+    "團體課": "人",
+    "私人課": "班",
+    "包團服務": "人"
+};
+const SERVICE_OPEN_TS = {
+    "團體課": SEASON_BEGIN.getTime() - 7 * DAY_TS,
+    "私人課": SEASON_BEGIN.getTime() - 7 * DAY_TS,
+    "包團服務": new Date( new Date().getFullYear(), new Date().getMonth(), new Date().getDate() ).getTime()
+}
+const FORCE_OPEN_ALL_SERVICE = true;   // 要看私人/團體課請在calendar.html中自行改成true.
+/*** REPLACE_CALENDAR_CONSTANT_END_MARKER ***/
+
+        main();
+        // 設定閏月的規則 https://xiwan.io/archive/most-efficient-leap-year-algorithm.html
+        function isLeapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0 && year % 400 !== 0) || (year % 100 === 0 && year % 400 === 0);
+        }
+
+        // 抓閏月
+        function getFebDays(year) {
+            return isLeapYear(year) ? 29 : 28;
+        }
+
+        function getDaysOfMonth(month, year) {
+            let daysOfMonth = [31, getFebDays(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            return daysOfMonth[month];
+        }
+        function main () {
+            // 抓calendar css
+            let calendar = document.querySelector('.calendar');
+
+            // 產生年月
+            generateCalendar = (month, year) => {
+                let calendarDays = calendar.querySelector('.calendar-days');
+                let calendarHeaderYear = calendar.querySelector('#year');
+                let calendarHeaderMonth = calendar.querySelector('#month');
+
+                calendarDays.innerHTML = '';
+
+                // 抓現在的日期
+                let currDate = new Date();
+
+                let currMonth = `${MONTH_NAMES[month]}`;
+                calendarHeaderMonth.innerHTML = currMonth;
+                calendarHeaderYear.innerHTML = year;
+
+                let firstDay = new Date(year, month, 1);
+                let toDay = getDaysOfMonth(month, year) + firstDay.getDay() - 1;
+                // toDay = Math.ceil((toDay+1) / 7) * 7 - 1
+
+                let yearData = overallAvailableSchedule[year] ? overallAvailableSchedule[year] : {};
+                let monthData = yearData[month+1] ? yearData[month+1] : {};
+
+                for (let i = 0; i <= toDay; i++) {
+                    let dayDiv = document.createElement('div');
+                    // if (i >= firstDay.getDay() && i <= getDaysOfMonth[month] + firstDay.getDay() - 1) {
+                    let day = i - firstDay.getDay() + 1;
+                    let dayTs = new Date(year, month, day);
+                    let dayData = monthData[day] ? monthData[day] : {};
+                    if ( day >= 1 ) {
+                        dayDiv.innerHTML = day;
+                        if ( dayTs > SEASON_BEGIN.getTime() - DAY_TS && dayTs <= SEASON_END.getTime() ) {
+                            let servicesTypes = ["包團服務","私人課","團體課"];
+                            let titleStrings = ["包團名額: <br>","私人課名額: <br>","團體課名額: <br>"];
+                            let displayResult = ["", "", ""];
+                            let isFull = true;
+                            for ( let j = 0; j < servicesTypes.length; j++ ) {
+                                let servicesType = servicesTypes[j];
+                                if ( new Date().getTime() < SERVICE_OPEN_TS[servicesType] && !FORCE_OPEN_ALL_SERVICE ) {
+                                    continue;
+                                }
+                                let available = dayData[servicesType] ? dayData[servicesType] : { "ski": 0, "snowboard":0 };
+                                if ( available["ski"] >= MIN_DISPLAY_NUM[servicesType] || available["snowboard"] >= MIN_DISPLAY_NUM[servicesType] ) {
+                                    displayResult[j] = titleStrings[j];
+                                    if ( available["ski"] !== 0 ) {
+                                        displayResult[j] += "Ski: " + available["ski"] + SERVICE_DISPLAY_UNIT[servicesType];
+                                    }
+                                    if ( available["snowboard"] !== 0 ) {
+                                        if ( available["ski"] !== 0 ) {
+                                            displayResult[j] += ", ";
+                                        }
+                                        displayResult[j] += "Snowboard: " + available["snowboard"] + SERVICE_DISPLAY_UNIT[servicesType];
+                                    }
+                                    displayResult[j] += "<br>"
+                                    isFull = false;
+                                }
+                            }
+                            if ( isFull ) {
+                                dayDiv.innerHTML += "<div class=\"calendar-full\">" + "<br>額滿";
+                            } else {
+                                dayDiv.innerHTML += "<div class=\"calendar-content\">" + displayResult[0] + displayResult[1] + displayResult[2];
+                            }
+                        }
+                        if (day === currDate.getDate() && year === currDate.getFullYear() && month === currDate.getMonth()) {
+                            dayDiv.classList.add('curr-date');
+                        }
+                    }
+                    calendarDays.appendChild(dayDiv);
+                }
+            }
+
+            let currDate = new Date();
+            let seasonBeginMonth = new Date(SEASON_BEGIN.getFullYear(), SEASON_BEGIN.getMonth(), 1);
+            let seasonEndMonth = new Date(SEASON_END.getFullYear(), SEASON_END.getMonth(), getDaysOfMonth(SEASON_END.getMonth(), SEASON_END.getFullYear()));
+            let isCurrentDayinSeason = currDate.getTime() > seasonBeginMonth.getTime();
+            let currMonth = { value: isCurrentDayinSeason ? currDate.getMonth() : seasonBeginMonth.getMonth() };
+            let currYear = { value: isCurrentDayinSeason ? currDate.getFullYear() : seasonBeginMonth.getFullYear() };
+
+            generateCalendar(currMonth.value, currYear.value);
+
+            document.querySelector('#prev-month').onclick = () => {
+                let nextYear = currYear.value;
+                let nextMonth = currMonth.value - 1;
+                if ( nextMonth < 0 ) {
+                    nextMonth = nextMonth + 12;
+                    nextYear--;
+                }
+                let diff = (nextYear - seasonBeginMonth.getFullYear()) * 12 + nextMonth - seasonBeginMonth.getMonth();
+                if ( ALLOW_SHOW_RANGE_EXCEED_SEASON || diff >= 0 ) {
+                    currMonth.value = nextMonth;
+                    currYear.value = nextYear;
+                    generateCalendar(currMonth.value, currYear.value);
+                }
+            }
+
+            document.querySelector('#next-month').onclick = () => {
+                let nextYear = currYear.value;
+                let nextMonth = currMonth.value + 1;
+                if ( nextMonth >= 12 ) {
+                    nextMonth %= 12;
+                    nextYear++;
+                }
+                let diff = (seasonEndMonth.getFullYear() - nextYear) * 12 + seasonEndMonth.getMonth() - nextMonth;
+                if ( ALLOW_SHOW_RANGE_EXCEED_SEASON || diff >= 0 ) {
+                    currMonth.value = nextMonth;
+                    currYear.value = nextYear;
+                    generateCalendar(currMonth.value, currYear.value);
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>
