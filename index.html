@@ -12,12 +12,12 @@
             /* height: 100vh; */
             display: grid;
             place-items: center;
-            background-color: rgb(1, 1, 1);
+            background-color: rgb(28, 28, 28);
         }
 
         .calendar {
-            height: 1000px;
-            width: 1200px;
+            height: 1300px;
+            width: 940px;
             background-color: rgb(116, 116, 116);
             border-radius: 30px;
             padding: 20px;
@@ -81,7 +81,7 @@
 
         .calendar-days div {
             /* width: 70px; */
-            height: 140px;
+            height: 190px;
             text-align: center;
             /* display: flex; */
             /* align-items: center; */
@@ -262,7 +262,7 @@ const FORCE_OPEN_ALL_SERVICE = true;   // 要看私人/團體課請在calendar.h
                         dayDiv.innerHTML = day;
                         if ( dayTs > SEASON_BEGIN.getTime() - DAY_TS && dayTs <= SEASON_END.getTime() ) {
                             let servicesTypes = ["包團服務","私人課","團體課"];
-                            let titleStrings = ["包團名額: <br>","私人課名額: <br>","團體課名額: <br>"];
+                            let titleStrings = ["<font color='dddddd'>包團名額: </font><br>","<font color='dddddd'>私人課名額:</font><br>","<font color='dddddd'>團體課名額:</font><br>"];
                             let displayResult = ["", "", ""];
                             let isFull = true;
                             for ( let j = 0; j < servicesTypes.length; j++ ) {
@@ -278,7 +278,7 @@ const FORCE_OPEN_ALL_SERVICE = true;   // 要看私人/團體課請在calendar.h
                                     }
                                     if ( available["snowboard"] !== 0 ) {
                                         if ( available["ski"] !== 0 ) {
-                                            displayResult[j] += ", ";
+                                            displayResult[j] += "<br>";
                                         }
                                         displayResult[j] += "Snowboard: " + available["snowboard"] + SERVICE_DISPLAY_UNIT[servicesType];
                                     }
