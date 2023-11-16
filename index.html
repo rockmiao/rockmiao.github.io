@@ -12,13 +12,14 @@
             /* height: 100vh; */
             display: grid;
             place-items: center;
-            background-color: rgb(25, 25, 25);
+            background-color: rgb(238, 238, 238);
         }
 
         .calendar {
             height: 1100px;
             width: 940px;
-            background-color: rgb(116, 116, 116);
+            background-color: rgb(238, 238, 238);
+            border: 1px solid rgb(11, 34, 117);
             border-radius: 30px;
             padding: 20px;
             position: relative;
@@ -28,7 +29,7 @@
         .calendar-header {
             text-align: center;
             font-size: 25px;
-            color: rgb(255, 255, 255);
+            color: rgb(11, 34, 117);
             padding: 10px;
         }
 
@@ -68,7 +69,7 @@
             display: grid;
             text-align: center;
             /* place-items: center; */
-            color: rgb(255, 255, 255);
+            color: rgb(11, 34, 117);
         }
 
         .calendar-days {
@@ -76,7 +77,7 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 2px;
             font-size: 25px;
-            color: rgb(255, 255, 255);
+            color: rgb(11, 34, 117);
         }
 
         .calendar-days div {
@@ -91,8 +92,8 @@
             cursor: pointer;
             /* animation: to-top 1s forwards; */
             border-radius: 10%;
-            border: 1px solid rgb(255, 255, 255);
-            background-color: rgb(116, 116, 116);
+            border: 1px solid rgb(11, 34, 117);
+            background-color: rgb(238, 238, 238);
         }
 
         .calendar-days div:hover {
@@ -103,7 +104,7 @@
             /* height: 100%; */
             border-radius: 10%;
             /* border: 1px solid rgb(255, 234, 0); */
-            background-color: rgb(50, 50, 50);
+            background-color: rgb(190, 190, 190);
         }
 
         .calendar-days div.calendar-content {
@@ -269,7 +270,7 @@ const FORCE_ALL_SERVICE_VISIBLE = false;   // 要看私人/團體課請在calend
                         dayDiv.innerHTML = day;
                         if ( dayTs > SEASON_BEGIN.getTime() - DAY_TS && dayTs <= SEASON_END.getTime() ) {
                             let servicesTypes = ["私人課","團體課"];
-                            let titleStrings = ["<font color='dddddd'>私人課名額:</font><br>","<font color='dddddd'>團體課名額:</font><br>"];
+                            let titleStrings = ["<font color='3078b1'>私人課名額:</font><br>","<font color='3078b1'>團體課名額:</font><br>"];
                             let displayResult = ["", ""];
                             let isFull = true;
                             for ( let j = 0; j < servicesTypes.length; j++ ) {
