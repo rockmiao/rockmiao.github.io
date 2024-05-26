@@ -286,11 +286,11 @@ const FORCE_ALL_SERVICE_VISIBLE = false;   // 要看私人/團體課請在calend
                                 let available = dayData[servicesType] ? dayData[servicesType] : { "ski": 0, "snowboard":0 };
                                 if ( available["ski"] >= MIN_DISPLAY_NUM[servicesType] || available["snowboard"] >= MIN_DISPLAY_NUM[servicesType] ) {
                                     displayResult[j] = titleStrings[j];
-                                    if ( available["ski"] !== 0 ) {
+                                    if ( /*available["ski"] !== 0*/false ) {
                                         displayResult[j] += "Ski: " + available["ski"] + SERVICE_DISPLAY_UNIT[servicesType];
                                     }
                                     if ( available["snowboard"] !== 0 ) {
-                                        if ( available["ski"] !== 0 ) {
+                                        if ( /*available["ski"] !== 0*/false ) {
                                             displayResult[j] += "<br>";
                                         }
                                         displayResult[j] += "Snowboard: " + available["snowboard"] + SERVICE_DISPLAY_UNIT[servicesType];
